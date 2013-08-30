@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Browser Click Loss Test</title>
+<style type="text/css">
+    body {
+        background-color: white;
+    }
+
+    #clickTarget {
+        width: 400px;
+        height: 400px;
+        background-color: gray;
+    }
+
+    .clicks {
+        width: 400px;
+        text-align: center;
+        font-size: 2em;
+        margin-top: 1em;
+    }
+
+    #clickCount {
+        font-weight: bold;
+    }
+</style>
+
+</head>
+<body>
+    <h1>Browser Click Loss Test</h1>
+
+    <p>This page counts click events that the body element receives.</p>
+    <p>The gray box does not have any event handling. Click events on the box should bubble up to the body. However, the box is being removed and recreated in the DOM repeatedly. This can cause a race condition where the click event is never delivered to the body.</p>
+
+    <label>
+        Milliseconds between box replacement:
+        <input type="text" id="replacementDelay" value="100" />
+    </label>
+
+    <div class="clicks">Clicks: <span id="clickCount">0</span></div>
+    <div id="container">
+        <div id="clickTarget"></div>
+    </div>
+
+    <script>
+        "use strict";
+
+        var clickCount = 0;
+        function incClickCount() {
+            clickCount++;
+            document.getElementById("clickCount").innerHTML = clickCount;
+        }
+
+        document.getElementsByTagName("body")[0].addEventListener("click", incClickCount, false);
+
+        function replaceElement() {
+            document.getElementById("container").innerHTML = '<div id="clickTarget"></div>';
+            var replacementDelay = document.getElementById("replacementDelay").value;
+            setTimeout(replaceElement, replacementDelay);
+        }
+
+        replaceElement();
+    </script>
+</body>
+</html>
